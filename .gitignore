@@ -1,6 +1,7 @@
 .idea/
 node_modules/
 assets
-save-folder/*
+save-folder/
+tmp/
 yarn.lock
 resources/

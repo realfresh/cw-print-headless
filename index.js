@@ -11,6 +11,9 @@ Raven.config('https://725ebc27db5f4f15b6ded0a61c5d7476@sentry.io/1217454', {
 
 Raven.context(() => {
 
+  if (!fs.existsSync("./save-folder")){
+    fs.mkdirSync("./save-folder");
+  }
 
   const config = JSON.parse(fs.readFileSync("./config.json"));
 
