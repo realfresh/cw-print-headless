@@ -1,0 +1,7 @@
+apps:
+  - script      : index.js
+    name        : index
+    exec_mode   : fork
+    autorestart : true
+    env:
+      NODE_ENV  : production

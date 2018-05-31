@@ -1,0 +1,22 @@
+{
+  "name": "cw-print-headless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "",
+    "start": "pm2 start process.yml",
+    "update": "sudo git pull && npm install realfresh/cw-print-service#master && pm2 reload index",
+    "stop": "pm2 stop index",
+    "reload": "pm2 reload index && pm2 log index",
+    "end": "pm2 delete index",
+    "log": "pm2 log index"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "cw-print-service": "^1.1.0",
+    "raven": "^2.6.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
