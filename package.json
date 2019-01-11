@@ -12,10 +12,15 @@
     "end": "pm2 delete index",
     "log": "pm2 log index"
   },
+  "bin": {
+    "cw-print-cli": "./index.js"
+  },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
-    "cw-print-service": "^1.1.4",
-    "raven": "^2.6.2"
+    "@sentry/node": "4.5.0",
+    "babel-polyfill": "6.26.0",
+    "cross-env": "^5.2.0",
+    "cw-print-service": "3.0.0",
+    "pm2": "^3.2.7"
   },
   "author": "",
   "license": "ISC"

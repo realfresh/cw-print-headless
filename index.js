@@ -1,45 +1,104 @@
-// MAIN APP SERVICE
-require("babel-polyfill");
-const fs = require('fs');
-const AppService = require('cw-print-service').default;
-const Raven = require('raven');
+#! /usr/bin/env node
 
-Raven.config('https://725ebc27db5f4f15b6ded0a61c5d7476@sentry.io/1217454', {
-  autoBreadcrumbs: true,
-  captureUnhandledRejections: true,
-}).install();
+const fs = require("fs");
+const pm2 = require("pm2");
 
-Raven.context(() => {
+const command = process.argv[2];
 
-  if (!fs.existsSync("./save-folder")){
-    fs.mkdirSync("./save-folder");
-  }
+console.log(command);
 
-  const config = JSON.parse(fs.readFileSync("./config.json"));
+if (command === "init") {
 
-  const isProduction = process.env.NODE_ENV == "production";
+  fs.writeFileSync("./config.json", JSON.stringify({
+    copies: 1,
+    api_url: "http://api.cloudwaitress-test.com",
+    api_key: "",
+    printers: [
+      "FK80"
+    ]
+  }, null, 2));
 
-  const Service = new AppService({
-    operating_system: "linux",
-    path_save_folder: "./save-folder",
-    api_url_base_64: isProduction ?
-      "https://api.cloudwaitress.com/printing/client/order-to-pdf" :
-      "http://localhost:3010/printing/client/order-to-pdf",
-    api_url_ably_auth: isProduction ?
-      "https://api.cloudwaitress.com/printing/client/token-request" :
-      "http://localhost:3010/printing/client/token-request",
+  console.log("CONFIG FILE CREATED");
+
+}
+
+if (command === "start") {
+
+  pm2.connect(function(err) {
+
+    if (err) {
+      console.error(err);
+      process.exit(2)
+    }
+
+    if (!fs.existsSync("./logs")) {
+      fs.mkdirSync("./logs");
+    }
+
+    const now = Date.now();
+
+    fs.readdir("./logs", (err, files) => {
+      files.forEach(file => {
+        const created = parseInt(file, 10);
+        if (now > (created + (1000 * 60 * 60 * 24 * 5))) {
+          const f = `./logs/${file}`;
+          console.log("CLEANING OLD LOG FILE", f);
+          fs.unlinkSync(f);
+        }
+      });
+    });
+
+    pm2.start({
+      script: __dirname + "/index-service.js",
+      error: `./logs/${now}`,
+      output: `./logs/${now}`,
+      env: {
+        DEBUG: "ERROR,WARN,INFO,DEV,PRINT-SERVICE,PRINTER"
+      }
+    }, (err, apps) => {
+      console.log("STARTED");
+      pm2.disconnect();
+      if (err) { throw err }
+    })
+
   });
 
-  Service.set_config({
-    printers: config.printers,
-    api_key: config.api_key,
+}
+
+if (command === "stop") {
+  pm2.killDaemon(function(err) {
+    if (err) {
+      console.error(err);
+      process.exit(2)
+    }
+    else {
+      console.log("STOPPED");
+      pm2.disconnect();
+      process.exit(0);
+    }
   });
+}
 
-  Service.on("error", e => {
-    console.log(e);
-    Raven.captureException(e);
+if (command === "reload") {
+  pm2.reload("all", function(err) {
+    if (err) {
+      console.error(err);
+      process.exit(2)
+    }
+    else {
+      console.log("RELOADED");
+      pm2.disconnect();
+    }
   });
+}
 
-  Service.start();
-
-});
+if (command === "list") {
+  pm2.list(function(err, list) {
+    if (err) {
+      console.error(err);
+      process.exit(2)
+    }
+    console.log(list);
+    pm2.disconnect();
+  });
+}
