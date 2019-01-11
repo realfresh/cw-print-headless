@@ -117,7 +117,7 @@ else if (command === "list") {
       console.error(err);
       process.exit(2)
     }
-    if (list.length > 1) {
+    if (list.length !== 1) {
       console.log(list);
     }
     else {
