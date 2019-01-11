@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $1 == "push" ]
+then
+   git add .
+   git commit -m "$2"
+   git push origin master
+   git tag $3
+   git push origin $3
+fi
+

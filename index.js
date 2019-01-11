@@ -2,16 +2,15 @@
 
 const fs = require("fs");
 const pm2 = require("pm2");
+const shelljs = require("shelljs");
 
 const command = process.argv[2];
-
-console.log(command);
 
 if (command === "init") {
 
   fs.writeFileSync("./config.json", JSON.stringify({
     copies: 1,
-    api_url: "http://api.cloudwaitress-test.com",
+    api_url: "https://api.cloudwaitress-test.com",
     api_key: "",
     printers: [
       "FK80"
@@ -21,8 +20,7 @@ if (command === "init") {
   console.log("CONFIG FILE CREATED");
 
 }
-
-if (command === "start") {
+else if (command === "start") {
 
   pm2.connect(function(err) {
 
@@ -56,16 +54,34 @@ if (command === "start") {
         DEBUG: "ERROR,WARN,INFO,DEV,PRINT-SERVICE,PRINTER"
       }
     }, (err, apps) => {
+
       console.log("STARTED");
+
       pm2.disconnect();
+
+      shelljs.exec('tail -f logs/*', function(code, stdout, stderr) {
+        console.log('Exit code:', code);
+        console.log('Program output:', stdout);
+        console.log('Program stderr:', stderr);
+      });
+
       if (err) { throw err }
+
     })
 
   });
 
 }
+else if (command === "log") {
 
-if (command === "stop") {
+  shelljs.exec('tail -f logs/*', function(code, stdout, stderr) {
+    console.log('Exit code:', code);
+    console.log('Program output:', stdout);
+    console.log('Program stderr:', stderr);
+  });
+
+}
+else if (command === "stop") {
   pm2.killDaemon(function(err) {
     if (err) {
       console.error(err);
@@ -78,8 +94,7 @@ if (command === "stop") {
     }
   });
 }
-
-if (command === "reload") {
+else if (command === "reload") {
   pm2.reload("all", function(err) {
     if (err) {
       console.error(err);
@@ -88,17 +103,36 @@ if (command === "reload") {
     else {
       console.log("RELOADED");
       pm2.disconnect();
+      shelljs.exec('tail -f logs/*', function(code, stdout, stderr) {
+        console.log('Exit code:', code);
+        console.log('Program output:', stdout);
+        console.log('Program stderr:', stderr);
+      });
     }
   });
 }
-
-if (command === "list") {
+else if (command === "list") {
   pm2.list(function(err, list) {
     if (err) {
       console.error(err);
       process.exit(2)
     }
-    console.log(list);
+    if (list.length > 1) {
+      console.log(list);
+    }
+    else {
+      const p = list[0];
+      console.log(`
+        PID: ${p.pid}, 
+        NAME: ${p.name}, 
+        CPU: ${p.monit.cpu} 
+        MEMORY: ${p.monit.memory / 1000000}mb
+        UPTIME: ${p.pm2_env.pm_uptime}
+      `)
+    }
     pm2.disconnect();
   });
+}
+else {
+  console.log(command);
 }
