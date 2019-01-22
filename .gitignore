@@ -8,3 +8,5 @@ resources/
 logs.txt
 config.json
 logs
+.fuse*
+start.sh

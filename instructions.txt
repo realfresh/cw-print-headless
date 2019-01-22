@@ -1,0 +1,7 @@
+sudo npm install -g cw-print-headless@x.x.x
+mkdir print && cd print
+cw-print-cli init
+sudo env "PATH=$PATH" cw-print-cli startup pi
+sudo systemctl start cw-print-startup.service
+sudo systemctl start cw-print.service
+sudo systemctl status cw-print.service
