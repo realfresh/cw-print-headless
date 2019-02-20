@@ -7,6 +7,13 @@ USR=$4
 
 if [[ ${COMMAND} == "startup" ]]; then
 
+croncmd="service cups restart"
+cronjob="*/30 * * * * $croncmd"
+
+( crontab -l | grep -v -F "$croncmd" ; echo "$cronjob" ) | crontab -
+
+echo "CRON JOB INSTALLED"
+
 cat <<- EOF > ${CWD_DIR}/startup.sh
 #!/bin/bash
 sudo cupsctl --remote-admin --remote-any --share-printers

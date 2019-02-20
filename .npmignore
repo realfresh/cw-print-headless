@@ -1,10 +1,14 @@
 .idea/
 node_modules/
 assets
+assets/
+assets/*
 save-folder/
 tmp/
 yarn.lock
 resources/
+resources
+resources/*
 logs.txt
 config.json
 logs

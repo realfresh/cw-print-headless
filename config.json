@@ -1,7 +1,7 @@
 {
   "copies": 1,
-  "api_url": "https://api.cloudwaitress-test.com",
-  "api_key": "kFkeSP16a|JeTxpklr0|c312f540-cec9-4e57-9123-7f1fb27dcec8",
+  "api_url": "http://localhost:3010",
+  "api_key": "kFkeSP16a|BhOAIJJU4|c312f540-cec9-4e57-9123-7f1fb27dcec8",
   "printers": [
     "FK80"
   ]

@@ -1,16 +1,17 @@
 {
   "name": "cw-print-headless",
-  "version": "1.5.2",
+  "version": "1.6.2",
   "description": "",
   "main": "index.js",
   "bin": {
-    "cw-print-cli": "./index.js"
+    "cwp": "./index.js"
   },
   "dependencies": {
     "@sentry/node": "4.5.0",
     "babel-polyfill": "6.26.0",
     "cw-print-service": "3.0.0",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "pm2": "^3.3.1"
   },
   "author": "",
   "license": "ISC"
